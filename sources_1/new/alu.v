@@ -47,6 +47,14 @@ module alu(input [`sizebus] a, input [`sizebus] b, input [16:0] op,output reg[`s
                     3'b111: y = andResult;
                 endcase
             end
+            `STYPE: begin
+                case (op[`f3bus])
+                    3'b000: y[7:0] = b[7:0]; // byte
+                    3'b001: y[15:0] = b[15:0]; // half
+                    3'b010: y[31:0] = b[31:0]; // word
+                    3'b011: y[63:0] = b[63:0]; // dword
+                endcase
+            end
             default: y = 0;
         endcase
     end

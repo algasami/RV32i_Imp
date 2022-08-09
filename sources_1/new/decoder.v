@@ -1,4 +1,5 @@
 `include "define.v"
+
 module decoder
     (
     input [31:0] instr, // instruction
@@ -66,6 +67,14 @@ module decoder
 
             `STYPE: begin
                 // TODO: FINISH ME
+                rs1addr = 0;
+                waddr = instr[19:15] + {instr[31:25],instr[11:7]};
+                rs2addr = instr[24:20];
+                imm_enable = `OFF;
+                rs1_enable = `ON;
+                rs2_enable = `ON;
+                w_enable = `ON;
+                opcode = {`NULL7, instr[14:12], instr[6:0]};
             end
 
             `UJTYPE: begin // UJ type

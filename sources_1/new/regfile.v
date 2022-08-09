@@ -29,54 +29,35 @@ module regfile
     reg[`regbus] regs[`reglen - 1:0]; // regs[n][0] = 1'b0
     always @(posedge clk) begin
         if (rst == `off) begin
-            if (writepass == `on && waddr != `regoff) begin
+            if (writepass == `on && waddr != `regoff)
                 regs[waddr] <= wdata;
-            end
         end
     end
 
     always@(*) begin
         if(rs1pass == `on) begin
-            if(rs1addr == `regoff)begin
-                rs1 = `offword;
-            end
-            else if(rs1addr == waddr && writepass == `on)begin
+            if(rs1addr == `regoff) rs1 = `offword;
+            else if(rs2addr == waddr && writepass == `on)
                 rs1 = wdata;
-            end
             else begin
-                if(regs[rs1addr][0] === 1'bX) begin
-                    rs1 = 0;
-                end
-                else begin
-                    rs1 = regs[rs1addr];
-                end
+                if(regs[rs1addr][0] === 1'bX) rs1 = 0;
+                else rs1 = regs[rs1addr];
             end
         end
-        else begin
-            rs1 = `offword;
-        end
+        else rs1 = `offword;
     end
 
     always@(*) begin
         if(rs2pass == `on) begin
-            if(rs2addr == `regoff)begin
-                rs2 = `offword;
-            end
-            else if(rs2addr == waddr && writepass == `on)begin
+            if(rs2addr == `regoff) rs2 = `offword;
+            else if(rs2addr == waddr && writepass == `on)
                 rs2 = wdata;
-            end
             else begin
-                if(regs[rs2addr][0] === 1'bX) begin
-                    rs2 = 0;
-                end
-                else begin
-                    rs2 = regs[rs2addr];
-                end
+                if(regs[rs2addr][0] === 1'bX) rs2 = 0;
+                else rs2 = regs[rs2addr];
             end
         end
-        else begin
-            rs2 = `offword;
-        end
+        else rs2 = `offword;
     end
 
 endmodule

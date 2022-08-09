@@ -15,19 +15,34 @@ module org(
     wire    RS2_ENABLE;
     wire    W_ENABLE;
     wire    IMM_ENABLE;
-    reg     [31:0] MUX_RESULT;
+    wire    PC_ENABLE;
+    wire    CHIP_ENABLE;
+    reg     [31:0] RS2_IMM;
+    reg     [`instr_addr_bus] PC;
 
-    assign INSTR = tb_instr;
+    // assign INSTR = tb_instr;
     assign tb_result = WCHAR;
 
     always@(*) begin
         if(IMM_ENABLE == `ON)begin
-            MUX_RESULT = IMM;
+            RS2_IMM = IMM;
         end
         else begin
-            MUX_RESULT = RS2;
+            RS2_IMM = RS2;
         end
     end
+
+    instructionFetcher if_mod(
+        .clk(clk),
+        .rst(reset),
+        .ce(CHIP_ENABLE),
+        .pc(PC)
+    );
+    instructionMemory im_mod(
+        .ce(CHIP_ENABLE),
+        .addr(PC),
+        .instr(INSTR)
+    );
 
     decoder d_mod(
         // input
@@ -63,7 +78,7 @@ module org(
 
     alu alu_mod(
         .a(RS1),
-        .b(MUX_RESULT),
+        .b(RS2_IMM),
         .op(OPCODE),
         .y(WCHAR)
     );
