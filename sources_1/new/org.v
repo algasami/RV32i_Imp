@@ -2,10 +2,7 @@
 
 module org(
     input clk,
-    input reset,
-    input [31:0] tb_instr,
-    output [31:0] tb_result
-);
+    input reset);
     wire    [31:0] INSTR;
     wire    [4:0] RS1_ADDR, RS2_ADDR,W_ADDR;
     wire    [16:0] OPCODE;
@@ -18,10 +15,7 @@ module org(
     wire    PC_ENABLE;
     wire    CHIP_ENABLE;
     reg     [31:0] RS2_IMM;
-    reg     [`instr_addr_bus] PC;
-
-    // assign INSTR = tb_instr;
-    assign tb_result = WCHAR;
+    wire    [`instr_addr_bus] PC;
 
     always@(*) begin
         if(IMM_ENABLE == `ON)begin
