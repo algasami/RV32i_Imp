@@ -4,6 +4,8 @@
 module instructionFetcher (
     input clk,
     input rst,
+    input je,
+    input [`instr_addr_bus] jmp,
     output reg ce,
     output reg [`instr_addr_bus] pc
 );
@@ -14,8 +16,10 @@ module instructionFetcher (
             ce <= `ON;
         if(ce == `OFF)
             pc <= 32'h3000_0000;
-        else
-            pc <= pc + 3'h4;
+        else begin
+            if(je == `ON) pc <= jmp;
+            else pc <= pc + 3'h4;
+        end
     end
 endmodule
 
@@ -24,7 +28,7 @@ module instructionMemory (
     input [`instr_addr_bus] addr,
     output reg [`instr_bus] instr
 );
-    reg [`instr_bus] instr_mem [3:0]; // 2 ^ 17 = 131072
+    reg [`instr_bus] instr_mem [4:0]; // 2 ^ 17 = 131072
     initial $readmemh("instr.txt",instr_mem);
     always @(*)	begin
         if(ce == `OFF)

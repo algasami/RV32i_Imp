@@ -12,23 +12,41 @@ module org(
     wire    RS2_ENABLE;
     wire    W_ENABLE;
     wire    IMM_ENABLE;
-    wire    PC_ENABLE;
+    wire    JMP_ENABLE;
     wire    CHIP_ENABLE;
-    reg     [31:0] RS2_IMM;
+    reg     [31:0] A,B;
     wire    [`instr_addr_bus] PC;
+    reg     [`instr_addr_bus] JMP;
 
     always@(*) begin
-        if(IMM_ENABLE == `ON)begin
-            RS2_IMM = IMM;
-        end
+        if(RS1_ENABLE == `ON) A = RS1;
         else begin
-            RS2_IMM = RS2;
+            // * Reserved for future mux
+            if(JMP_ENABLE == `ON) A = PC;
         end
+    end
+
+    always@(*) begin
+        if(RS2_ENABLE == `ON) B = RS2;
+        else begin
+            // * Reserved for future mux
+            if(IMM_ENABLE == `ON) B = IMM;
+        end
+    end
+
+
+    always@(*) begin
+        if(JMP_ENABLE == `ON)
+            JMP = WCHAR;
+        else
+            JMP = {32{`OFF}};
     end
 
     instructionFetcher if_mod(
         .clk(clk),
         .rst(reset),
+        .je(JMP_ENABLE),
+        .jmp(JMP),
         .ce(CHIP_ENABLE),
         .pc(PC)
     );
@@ -39,6 +57,7 @@ module org(
     );
 
     decoder d_mod(
+        .clk(clk),
         // input
         .instr(INSTR),
         // output
@@ -50,7 +69,8 @@ module org(
         .rs1_enable(RS1_ENABLE),
         .rs2_enable(RS2_ENABLE),
         .w_enable(W_ENABLE),
-        .imm_enable(IMM_ENABLE)
+        .imm_enable(IMM_ENABLE),
+        .jmp_enable(JMP_ENABLE)
     );
     regfile reg_mod(
         .clk(clk),
@@ -71,8 +91,8 @@ module org(
     );
 
     alu alu_mod(
-        .a(RS1),
-        .b(RS2_IMM),
+        .a(A),
+        .b(B),
         .op(OPCODE),
         .y(WCHAR)
     );

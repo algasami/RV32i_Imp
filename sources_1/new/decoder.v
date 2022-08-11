@@ -2,6 +2,7 @@
 
 module decoder
     (
+    input clk,
     input [31:0] instr, // instruction
 
     output reg [16:0] opcode,
@@ -12,7 +13,8 @@ module decoder
     output reg rs1_enable,
     output reg rs2_enable,
     output reg w_enable,
-    output reg imm_enable
+    output reg imm_enable,
+    output reg jmp_enable
     );
 
 
@@ -84,6 +86,12 @@ module decoder
                 imm[10:1] = instr[30:21];
                 imm[20] = instr[31];
                 waddr = instr[11:7];
+                imm_enable = `ON;
+                rs1_enable = `OFF;
+                rs2_enable = `OFF;
+                jmp_enable = `ON;
+                w_enable = `ON;
+                opcode = {`NULL7, `NULL3, instr[6:0]};
             end
 
             `UTYPE_AUIPC,`UTYPE_LUI: begin // UTYPE type
@@ -91,5 +99,8 @@ module decoder
                 waddr = instr[11:7];
             end
         endcase
+    end
+    always @(posedge clk) begin
+        jmp_enable <= `OFF;
     end
 endmodule
