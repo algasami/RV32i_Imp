@@ -24,8 +24,8 @@ module instructionMemory (
     input [`instr_addr_bus] addr,
     output reg [`instr_bus] instr
 );
-    reg [`instr_bus] instr_mem [131071:0]; // 2 ^ 17
-    initial $readmemb("instr.txt",instr_mem);
+    reg [`instr_bus] instr_mem [3:0]; // 2 ^ 17 = 131072
+    initial $readmemh("instr.txt",instr_mem);
     always @(*)	begin
         if(ce == `OFF)
             instr = {32{`OFF}};
