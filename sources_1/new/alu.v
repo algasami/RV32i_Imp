@@ -49,9 +49,9 @@ module alu(input [`sizebus] a, input [`sizebus] b, input [16:0] op,output reg[`s
             end
             `STYPE: begin
                 case (op[`f3bus])
-                    3'b000: y[7:0] = b[7:0]; // byte
-                    3'b001: y[15:0] = b[15:0]; // half
-                    3'b010: y[31:0] = b[31:0]; // word
+                    3'b000: y[a +: 8] = b[7:0]; // byte
+                    3'b001: y[a +: 16] = b[15:0]; // half
+                    3'b010: y[a +: 32] = b[31:0]; // word
                     // 3'b011: y[63:0] = b[63:0]; // dword
                 endcase
             end
@@ -59,11 +59,10 @@ module alu(input [`sizebus] a, input [`sizebus] b, input [16:0] op,output reg[`s
                 y = addResult;
             end
             `BTYPE: begin
-                y = 0;
                 case (op[`f3bus])
-                    3'b110: if(a > b) y = b;
-                    3'b101: if($signed(a) >= $signed(b)) y = b;
-                    3'b111: if(a >= b) y = b;
+                    3'b110: if(a > b) y = 1;
+                    3'b101: if($signed(a) >= $signed(b)) y = 1;
+                    3'b111: if(a >= b) y = 1;
                 endcase
             end
             default: y = addResult;

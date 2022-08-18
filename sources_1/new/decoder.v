@@ -74,11 +74,14 @@ module decoder
             `STYPE: begin
                 // TODO: FINISH ME
                 rs1addr = 0;
-                waddr = instr[19:15] + {instr[31:25],instr[11:7]};
-                rs2addr = instr[24:20];
-                imm_enable = `OFF;
+
+                waddr = instr[19:15]; // rs1
+                rs1addr = instr[24:20]; // rs2 -> switch rs2 to rs1 (because B IS OCCPUIED BY IMM
+                imm[11:5] = instr[31:25];
+                imm[4:0] = instr[11:7];
+                imm_enable = `ON;
                 rs1_enable = `ON;
-                rs2_enable = `ON;
+                rs2_enable = `OFF;
                 w_enable = `ON;
                 branch_enable = `OFF;
                 opcode = {`NULL7, instr[14:12], instr[6:0]};
@@ -95,6 +98,7 @@ module decoder
                 rs1_enable = `OFF;
                 rs2_enable = `OFF;
                 uj_enable = `ON;
+                jmp_enable = `ON;
                 w_enable = `ON;
                 branch_enable = `OFF;
                 opcode = {`NULL7, `NULL3, instr[6:0]};
@@ -112,10 +116,11 @@ module decoder
                 imm[11] = instr[7];
                 rs1addr = instr[19:15];
                 rs2addr = instr[24:20];
-                imm_enable = `ON;
+                imm_enable = `OFF;
                 rs1_enable = `ON;
                 rs2_enable = `ON;
                 w_enable = `OFF;
+                jmp_enable = `ON;
                 branch_enable = `ON;
                 opcode = {`NULL7, instr[14:12],instr[6:0]};
             end
@@ -123,5 +128,7 @@ module decoder
     end
     always @(posedge clk) begin
         uj_enable <= `OFF;
+        jmp_enable <= `OFF;
+        branch_enable <= `OFF;
     end
 endmodule

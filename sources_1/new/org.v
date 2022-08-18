@@ -14,6 +14,7 @@ module org(
     wire    IMM_ENABLE;
     wire    UJ_ENABLE;
     wire    JMP_ENABLE;
+    wire    BRANCH_ENABLE;
     wire    CHIP_ENABLE;
     reg     [31:0] A,B;
     wire    [`instr_addr_bus] PC;
@@ -37,10 +38,10 @@ module org(
 
 
     always@(*) begin
-        if(UJ_ENABLE == `ON)
+        if(UJ_ENABLE == `ON && JMP_ENABLE == `ON)
             JMP = WCHAR;
-        else if(JMP_ENABLE == `ON)
-            JMP = PC + WCHAR;
+        else if(BRANCH_ENABLE == `ON && JMP_ENABLE == `ON && WCHAR != 0)
+            JMP = PC + IMM;
         else
             JMP = {32{`OFF}};
     end
@@ -48,7 +49,7 @@ module org(
     instructionFetcher if_mod(
         .clk(clk),
         .rst(reset),
-        .je(UJ_ENABLE),
+        .je(JMP_ENABLE),
         .jmp(JMP),
         .ce(CHIP_ENABLE),
         .pc(PC)
@@ -74,7 +75,8 @@ module org(
         .w_enable(W_ENABLE),
         .imm_enable(IMM_ENABLE),
         .uj_enable(UJ_ENABLE),
-        .jmp_enable(JMP_ENABLE)
+        .jmp_enable(JMP_ENABLE),
+        .branch_enable(BRANCH_ENABLE)
     );
     regfile reg_mod(
         .clk(clk),
