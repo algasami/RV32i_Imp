@@ -58,6 +58,14 @@ module alu(input [`sizebus] a, input [`sizebus] b, input [16:0] op,output reg[`s
             `UJTYPE: begin
                 y = addResult;
             end
+            `BTYPE: begin
+                y = 0;
+                case (op[`f3bus])
+                    3'b110: if(a > b) y = b;
+                    3'b101: if($signed(a) >= $signed(b)) y = b;
+                    3'b111: if(a >= b) y = b;
+                endcase
+            end
             default: y = addResult;
         endcase
     end

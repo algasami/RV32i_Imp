@@ -14,7 +14,9 @@ module decoder
     output reg rs2_enable,
     output reg w_enable,
     output reg imm_enable,
-    output reg jmp_enable
+    output reg uj_enable,
+    output reg jmp_enable,
+    output reg branch_enable
     );
 
 
@@ -28,6 +30,7 @@ module decoder
                 rs2_enable = `ON;
                 w_enable = `ON;
                 imm_enable = `OFF;
+                branch_enable = `OFF;
                 opcode = {instr[31:25],instr[14:12],instr[6:0]};
             end
 
@@ -62,6 +65,7 @@ module decoder
                         rs1_enable = `ON;
                         rs2_enable = `OFF;
                         w_enable = `ON;
+                        branch_enable = `OFF;
                         opcode = {`NULL7,instr[14:12],instr[6:0]};
                     end
                 endcase
@@ -76,6 +80,7 @@ module decoder
                 rs1_enable = `ON;
                 rs2_enable = `ON;
                 w_enable = `ON;
+                branch_enable = `OFF;
                 opcode = {`NULL7, instr[14:12], instr[6:0]};
             end
 
@@ -89,8 +94,9 @@ module decoder
                 imm_enable = `ON;
                 rs1_enable = `OFF;
                 rs2_enable = `OFF;
-                jmp_enable = `ON;
+                uj_enable = `ON;
                 w_enable = `ON;
+                branch_enable = `OFF;
                 opcode = {`NULL7, `NULL3, instr[6:0]};
             end
 
@@ -98,9 +104,24 @@ module decoder
                 imm[31:12] = instr[31:12];
                 waddr = instr[11:7];
             end
+
+            `BTYPE: begin   //B-type
+                imm[12] = instr[31];
+                imm[10:5] = instr[30:25];
+                imm[4:1] = instr[11:8];
+                imm[11] = instr[7];
+                rs1addr = instr[19:15];
+                rs2addr = instr[24:20];
+                imm_enable = `ON;
+                rs1_enable = `ON;
+                rs2_enable = `ON;
+                w_enable = `OFF;
+                branch_enable = `ON;
+                opcode = {`NULL7, instr[14:12],instr[6:0]};
+            end
         endcase
     end
     always @(posedge clk) begin
-        jmp_enable <= `OFF;
+        uj_enable <= `OFF;
     end
 endmodule

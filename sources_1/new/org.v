@@ -12,6 +12,7 @@ module org(
     wire    RS2_ENABLE;
     wire    W_ENABLE;
     wire    IMM_ENABLE;
+    wire    UJ_ENABLE;
     wire    JMP_ENABLE;
     wire    CHIP_ENABLE;
     reg     [31:0] A,B;
@@ -22,7 +23,7 @@ module org(
         if(RS1_ENABLE == `ON) A = RS1;
         else begin
             // * Reserved for future mux
-            if(JMP_ENABLE == `ON) A = PC;
+            if(UJ_ENABLE == `ON) A = PC;
         end
     end
 
@@ -36,8 +37,10 @@ module org(
 
 
     always@(*) begin
-        if(JMP_ENABLE == `ON)
+        if(UJ_ENABLE == `ON)
             JMP = WCHAR;
+        else if(JMP_ENABLE == `ON)
+            JMP = PC + WCHAR;
         else
             JMP = {32{`OFF}};
     end
@@ -45,7 +48,7 @@ module org(
     instructionFetcher if_mod(
         .clk(clk),
         .rst(reset),
-        .je(JMP_ENABLE),
+        .je(UJ_ENABLE),
         .jmp(JMP),
         .ce(CHIP_ENABLE),
         .pc(PC)
@@ -70,6 +73,7 @@ module org(
         .rs2_enable(RS2_ENABLE),
         .w_enable(W_ENABLE),
         .imm_enable(IMM_ENABLE),
+        .uj_enable(UJ_ENABLE),
         .jmp_enable(JMP_ENABLE)
     );
     regfile reg_mod(
