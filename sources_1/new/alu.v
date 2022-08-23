@@ -56,7 +56,7 @@ module alu(input [`sizebus] a, input [`sizebus] b, input [16:0] op,output reg[`s
                 endcase
             end
             `UJTYPE: begin
-                y = addResult;
+                y = a + 32'h4;
             end
             `BTYPE: begin
                 case (op[`f3bus])

@@ -39,7 +39,7 @@ module org(
 
     always@(*) begin
         if(UJ_ENABLE == `ON && JMP_ENABLE == `ON)
-            JMP = WCHAR;
+            JMP = PC + IMM; // fix this
         else if(BRANCH_ENABLE == `ON && JMP_ENABLE == `ON && WCHAR != 0)
             JMP = PC + IMM;
         else
