@@ -29,21 +29,20 @@ module org(
     end
 
     always@(*) begin
-        if(RS2_ENABLE == `ON) B = RS2;
+        if(IMM_ENABLE == `ON) B = IMM;
         else begin
+            if(RS2_ENABLE == `ON) B = RS2;
             // * Reserved for future mux
-            if(IMM_ENABLE == `ON) B = IMM;
         end
     end
 
 
+    // Branch and Jump mux
     always@(*) begin
-        if(UJ_ENABLE == `ON && JMP_ENABLE == `ON)
-            JMP = PC + IMM; // fix this
-        else if(BRANCH_ENABLE == `ON && JMP_ENABLE == `ON && WCHAR != 0)
+        if(JMP_ENABLE == `ON && (UJ_ENABLE == `ON || BRANCH_ENABLE == `ON) && WCHAR != 0)
             JMP = PC + IMM;
         else
-            JMP = {32{`OFF}};
+            JMP = PC + 3'h4;
     end
 
     instructionFetcher if_mod(

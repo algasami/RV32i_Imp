@@ -1,10 +1,6 @@
-00200093 // 000000000010 00000 000 00001 0010011 -- put 2 in 00001
-00208113 // 000000000010 00001 000 00010 0010011 -- add 00001(data = 2) and 2 -> store in 00010(data becomes 4)
-00116463
-// imm12 | imm 10:5 |                 | imm 4:1 | imm 11 |
-// 0     | 000000   | 00001 00010 110 | 0100    | 0      | 1100011
-// if data at 00010 is bigger than data at 00001 then jump from here to 8 (2 commands after)
-// imm has been **left-shifted** by one, so putting 0100 at 4:1 actually
-// assigns imm with the value 8 instead of 4
-00300193 // 000000000011 00000 000 00011 0010011 -- put 3 in 00011
-00400193 // 000000000100 00000 000 00011 0010011 -- put 4 in 00011 // jump to here!
+00 20 00 93 //   0x0: addi x1 x0 2
+00 60 01 13 //   0x4: addi x2 x0 6
+00 00 01 93 //   0x8: addi x3 x0 0
+00 10 02 13 //   0xc: addi x4 x0 1
+00 41 81 b3 //   0x10: add x3 x3 x4
+fe 31 5e e3 //   0x14: bge x2 x3 -4

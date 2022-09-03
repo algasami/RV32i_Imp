@@ -28,12 +28,12 @@ module instructionMemory (
     input [`instr_addr_bus] addr,
     output reg [`instr_bus] instr
 );
-    reg [`instr_bus] instr_mem [4:0]; // 2 ^ 17 = 131072
+    reg [7:0] instr_mem [1023:0]; // 2 ^ 17 = 131072
     initial $readmemh("instr.txt",instr_mem);
     always @(*)	begin
         if(ce == `OFF)
             instr = {32{`OFF}};
         else
-            instr = instr_mem[addr[18:2]]; // 16 - 0 + 1 = 17 => 2 ^ 17 expressions
+            instr = {instr_mem[addr[18:2]*4],instr_mem[addr[18:2]*4 + 1],instr_mem[addr[18:2]*4 + 2],instr_mem[addr[18:2]*4 + 3]}; // 16 - 0 + 1 = 17 => 2 ^ 17 expressions
     end
 endmodule

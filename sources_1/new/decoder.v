@@ -93,6 +93,11 @@ module decoder
                 imm[11] = instr[20];
                 imm[10:1] = instr[30:21];
                 imm[20] = instr[31];
+                // Since imm[20] is signed, we need to config everything else to fit into 2's complement.
+                if(imm[20] == 1'b1)begin//negative
+                    imm[31:21] = {11{1'b1}};
+                    imm[0] = 1'b1;
+                end
                 waddr = instr[11:7];
                 imm_enable = `ON;
                 rs1_enable = `OFF;
@@ -114,6 +119,11 @@ module decoder
                 imm[10:5] = instr[30:25];
                 imm[4:1] = instr[11:8];
                 imm[11] = instr[7];
+                // Since imm[12:1] is signed, we need to config everything else to fit into 2's complement.
+                if(imm[12] == 1'b1)begin//negative
+                    imm[31:13] = {19{1'b1}};
+                    imm[0] = 1'b0;
+                end
                 rs1addr = instr[19:15];
                 rs2addr = instr[24:20];
                 imm_enable = `OFF;

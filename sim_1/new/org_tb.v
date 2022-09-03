@@ -16,7 +16,7 @@ module org_tb();
 
     initial begin
         #80 reset = 1'b0;
-        #200 $stop;
+        #1200 $stop;
     end
 
     org mock(clk,reset);
