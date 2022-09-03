@@ -1,0 +1,3 @@
+[submodule "vendors/tohex"]
+	path = vendors/tohex
+	url = https://github.com/375432636/risev_executable_code_to_hex.git
